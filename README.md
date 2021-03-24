@@ -21,7 +21,7 @@ pip3 install git+https://github.com/Popeyef5/Cassandra.git --upgrade
 ### Simulation
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Popeyef5/Cassandra/master/docs/early_sim.png">
+  <img src="https://raw.githubusercontent.com/Popeyef5/Cassandra/master/docs/images/early_sim.jpg">
 </p> 
 
 ### TODO
