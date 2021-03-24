@@ -18,6 +18,12 @@ pip3 install git+https://github.com/Popeyef5/Cassandra.git --upgrade
 
 ### Example
 
+Cool examples coming soon<sup>**TM**</sup>. Until then, for an out of the box example run
+
+```bash
+python examples/hello_world.py
+```
+
 ### Simulation
 
 <p align="center">

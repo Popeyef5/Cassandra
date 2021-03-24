@@ -9,14 +9,9 @@ if __name__ == '__main__':
   from cassandra.simulation import Simulation
   import numpy as np
 
-
-  MAX_MOUNT_SPEED = 1
-  PID_KP = 0
-  PID_KI = 0
-  PID_KD = 0
-  SIM_CLOCK_SPEED = 10e2 
   FLIGHT_CONTROLLER_LOOP_TIME = 0.5
   SIM_TIME = 8 
+  SIM_TIMESTEP = 0.1
 
  
   thrust_curve = np.array([
@@ -30,41 +25,18 @@ if __name__ == '__main__':
   mount = MotorMount()
   mount.attach_motor(motor)
 
-  components = {
+  rocket_components = {
     'frame': frame,
     'mount': mount
   }
 
-  kinematics = Kinematics(components=components)
+  kinematics = Kinematics(components=rocket_components)
  
   software = FlightSoftware(FLIGHT_CONTROLLER_LOOP_TIME)
   
   rocket = Rocket(kinematics, software, mount)
 
   simulation = Simulation(rocket)
-  simulation.run(SIM_TIME, 0.01)
+  simulation.run(SIM_TIME, SIM_TIMESTEP)
 
-  plot_1 = {
-    'y': {
-      'logname': 'cm_position',
-      'ops': [lambda x : x[2]]
-      },
-    'x': {
-      'logname': 'time',
-      'ops': []
-      }
-    }
-  plot_2 = {
-    'y': {
-      'logname': 'cm_position',
-      'ops': [lambda x : x[0]]
-    },
-    'x': {
-      'logname': 'time',
-      'ops': []
-    }
-  }
-
-
-  #simulation.plot(include=[plot_1, plot_2], in_terminal=False)
   simulation.animate()
