@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 
 if __name__ == '__main__':
   from cassandra.rocket import Rocket
@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
   FLIGHT_CONTROLLER_LOOP_TIME = 0.5
   SIM_TIME = 8 
-  SIM_TIMESTEP = 0.1
+  SIM_TIMESTEP = 0.01
 
  
   thrust_curve = np.array([

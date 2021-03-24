@@ -26,8 +26,10 @@ python examples/hello_world.py
 
 ### Simulation
 
+UI in development. In the meantime, here's a low FPS gif for you:
+
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Popeyef5/Cassandra/master/docs/images/early_sim.jpg">
+  <img src="https://raw.githubusercontent.com/Popeyef5/Cassandra/master/docs/images/early_sim.gif">
 </p> 
 
 ### TODO
