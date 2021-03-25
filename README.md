@@ -63,4 +63,6 @@ Although there is plenty to do and everything is welcome, if you want to contrib
 * GitHub actions
 * Improve UI
 * Improve animation
-
+* Add aerodynamics (tough!)
+* Add common rocket components as subcasses with preset attributes
+* Support for RASP (.eng) and RockSim (.rse) formats
