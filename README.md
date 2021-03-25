@@ -8,6 +8,12 @@ Currently written for enhanced readability, Cassandra allows from plug-and-play 
 
 Eventually, Cassandra will foresee all TVC powered flights, even those which are not mentioned to her. Until then, there's much to do.
 
+### The bigger picture
+
+Cassandra is part of the Hermes Project, an initiative whose goal is to create open-source reliable model rockets. There is so much to do besides coding: CAD design, Data analytics, Graphic design. If you want to know more and/or feel like you could help in any way, come say hi!
+
+[![Widget for the Discord API guild](https://discord.com/api/guilds/824454398070882334/widget.png?style=banner2)](https://discord.gg/jEPMA4SuCB)
+
 ### Instalation
 
 For now, until we get Cassandra on PyPi, do:
