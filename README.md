@@ -18,7 +18,23 @@ pip3 install git+https://github.com/Popeyef5/Cassandra.git --upgrade
 
 ### Example
 
-Cool examples coming soon<sup>**TM**</sup>. Until then, for an out of the box example run
+A simple "hello_rocket" example:
+
+```python
+from cassandra.rockets import SimpleRocket
+from cassandra.simulation import Simulation
+
+SIM_TIME = 5
+SIM_TIMESTEP = 0.01
+
+rocket = SimpleRocket()
+
+simulation = Simulation(rocket)
+simulation.run(SIM_TIME, SIM_TIMESTEP)
+simulation.animate()
+```
+
+To get a sample animation right away:
 
 ```bash
 python examples/hello_world.py

@@ -12,6 +12,6 @@ Internal Modules
    log.rst
    motors.rst
    physics.rst
-   rocket.rst
+   rockets.rst
    simulation.rst
    utils.rst

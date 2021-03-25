@@ -1,4 +1,9 @@
 import numpy as np
+from cassandra.physics import Kinematics
+from cassandra.components import Frame, MotorMount
+from cassandra.motors import UniformMotor
+from cassandra.control import FlightSoftware
+
 
 class Rocket:
   """
@@ -89,3 +94,26 @@ class Rocket:
     data = self.kinematics.update(timestep, ext_forces)
     data.update({'thrust': thrust})
     return data
+
+
+class SimpleRocket(Rocket):
+  """
+  A simple ready-to-use rocket with default values.
+  """
+
+  def __init__(self):
+    motor = UniformMotor(25, 5)
+
+    frame = Frame()
+    mount = MotorMount()
+    mount.attach_motor(motor)
+
+    software = FlightSoftware(0.5)
+
+    components = {
+      'frame': frame,
+      'mount': mount
+    }
+    kinematics = Kinematics(components=components)
+    
+    super().__init__(kinematics=kinematics, software=software, mount=mount)

@@ -81,3 +81,23 @@ class Motor:
     self.ignition_time += timestep
 
 
+class UniformMotor(Motor):
+  """
+  A solid rocket motor with a uniform constant burn and mass loss over a certain period of time.
+
+  Parameters
+  ----------
+  max_thrust : scalar, default=0
+    The constant thrust of the burning motor.
+  burn_time : scalar, default=0
+    The total burn time of the motor.
+  full_mass : scalar, default=0
+    The initial weight of the motor.
+  empty_mass : scalar, default=0
+    The final weight of the depleted motor.
+  """
+
+  def __init__(self, max_thrust=0, burn_time=0, full_mass=0, empty_mass=0):
+    thrust_curve = np.array([[0, burn_time], [max_thrust, 0]])
+    mass_curve = np.array([[0, burn_time], [full_mass, empty_mass]])
+    super().__init__(thrust_curve, mass_curve)

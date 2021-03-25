@@ -1,6 +1,7 @@
 import numpy as np
 import quaternion as q
 import math
+from cassandra.physics import EulerAngles
 
 
 class PID:
@@ -71,6 +72,8 @@ class FlightSoftware:
   """
   A flight software for controlling the rocket before, during and after flight.
 
+  This class is meant to be subclassed to specify a specific program method, overriding the default one.
+
   Parameters
   ----------
   loop_time : scalar, default=0
@@ -118,9 +121,8 @@ class FlightSoftware:
     measurements : dict
       The physical information available to the software at this point in time.
     """
-    if rocket.mount.target == np.quaternion(1, 0, 0, 0):
-      rocket.mount.set_target(1/np.quaternion(math.cos(0.087 * 0.5), 0, math.sin(0.087 * 0.5), 0))
-    else:
-      rocket.mount.set_target(1/rocket.mount.target)
-
+    roll = np.random.uniform(-rocket.mount.max_roll, rocket.mount.max_roll)
+    pitch = np.random.uniform(-rocket.mount.max_pitch, rocket.mount.max_pitch)
+    orientation = EulerAngles(roll, pitch, 0).to_quaternion()
+    rocket.mount.set_target(orientation)
 
