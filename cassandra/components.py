@@ -1,10 +1,30 @@
-from cassandra.physics import Component, Force, EulerAngles
+from cassandra.physics.kinematics import Force, EulerAngles, MassiveBody, CompositeBody, Loggable
 from cassandra.utils import constrain
 import numpy as np
 import quaternion as q
 
 
-class Frame(Component):
+class RocketComponent(MassiveBody, CompositeBody, Loggable):
+  """
+  A base class for all rocket components.
+
+  Parameters
+  ----------
+  name : str, default=''
+  """
+  def __init__(self, name='', *args, **kwargs):
+    self.name = name
+    super().__init__(*args, **kwargs)
+
+  def status(self):
+    """dict: The current status of the component comprised of its position and orientation."""
+    return {
+      f"{self.name}_position": self.position,
+      f"{self.name}_orientation": self.orientation
+    }
+
+
+class Frame(RocketComponent):
   """
   The rigid frame of a rocket.
 
@@ -30,13 +50,15 @@ class Frame(Component):
       name='frame',
       height=1,
       diameter=0.1,
+      *args,
+      **kwargs
   ):
-    super().__init__(name=name)
+    super().__init__(name=name, *args, **kwargs)
     self.height = height
     self.diameter = diameter
 
 
-class MotorMount(Component):
+class MotorMount(RocketComponent):
   """
   A motor mount to attach solid rocket motors to the frame.
 
@@ -63,21 +85,27 @@ class MotorMount(Component):
     The mount's maximum amplitude in the pitch direction. 
   target : quaternion
     The mount's target orientation encoded in a quaternion.
+  motor : Motor
+    The mount's current motor, if any.
   """ 
   def __init__(
       self,
       name='mount',
-      position=np.zeros(3),
       max_speed=60,
       max_roll=5,
-      max_pitch=5 
+      max_pitch=5,
+      *args,
+      **kwargs
   ):
-    super().__init__(name=name, position=position)
-    self.motor = None
+    super().__init__(name=name, *args, **kwargs)
     self.max_speed = np.deg2rad(max_speed) 
     self.max_roll = np.deg2rad(max_roll)
     self.max_pitch = np.deg2rad(max_pitch)
     self.target = np.quaternion(1, 0, 0, 0)
+
+  @property
+  def motor(self):
+    return self.components.get('motor', None)
 
   def attach_motor(self, motor):
     """
@@ -88,13 +116,13 @@ class MotorMount(Component):
     motor : Motor
       The motor to attach.
     """
-    self.motor = motor
+    self.components['motor'] = motor
 
   def detach_motor(self):
     """
     Detach any existing motors from the mount.
     """
-    self.motor = None
+    self.components.pop('motor', None)
 
   def set_target(self, target):
     """
@@ -133,7 +161,7 @@ class MotorMount(Component):
     orientation_euler.pitch += pitch_delta
     self.orientation = orientation_euler.to_quaternion()
 
-  def update(self, timestep):
+  def update(self, timestep, *args, **kwargs):
     """
     Update the mount's physics (orientation and eventual motor) given a certain ellapsed time.
 
@@ -142,11 +170,10 @@ class MotorMount(Component):
     timestep : scalar
       The ellapsed time with which to update the mount.
     """
-    if self.motor:
-      self.motor.update(timestep)
     self.update_orientation(timestep)
+    return super().update(timestep, *args, **kwargs)
 
-  def thrust(self, timestep):
+  def thrust(self):
     """
     Get the thrust produced by the motor given a certain ellapsed time.
 
@@ -165,7 +192,7 @@ class MotorMount(Component):
     else:
       thrust = self.motor.thrust()
       if not thrust:
-        return None
+        return Force()
       else:
         vector = q.rotate_vectors(self.orientation, np.array([0, 0, 1]))
         return Force(thrust * vector, self.position)      
