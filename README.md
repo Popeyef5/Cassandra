@@ -8,6 +8,13 @@ Currently written for enhanced readability, Cassandra allows from plug-and-play 
 
 Eventually, Cassandra will foresee all TVC powered flights, even those which are not mentioned to her. Until then, there's much to do.
 
+### Current key features
+
+* Versatile creation of complex rockets
+* Clean code enhanced for readability
+* Multiple numerical integration methods (and extremely easy to incorporate new ones)
+* Flight computer software loop cycle time decoupled from the simulation's timestep
+
 ### The bigger picture
 
 Cassandra is part of the Hermes Project, an initiative whose goal is to create open-source reliable model rockets. There is so much to do besides coding: CAD design, Data analytics, Graphic design. If you want to know more and/or feel like you could help in any way, come say hi!
@@ -56,13 +63,15 @@ UI in development. In the meantime, here's a low FPS gif for you:
 
 ### TODO
 
-Although there is plenty to do and everything is welcome, if you want to contribute but don't know how to, here are a couple of ideas that would come in handy:
+Although there is plenty to do and everything is welcome, if you want to contribute but don't know how to, here are a couple of ideas that would come in handy (in no particular order):
 
-* A logo is always nice :)
+* ~~A logo is always nice :)~~ On the works!
 * Tests (pretty please?)
 * GitHub actions
 * Improve UI
 * Improve animation
 * Add aerodynamics (tough!)
+* Add support for hybrid/liquid motors
+* ThreeJS based animation
 * Add common rocket components as subcasses with preset attributes
 * Support for RASP (.eng) and RockSim (.rse) formats
