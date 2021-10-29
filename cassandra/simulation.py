@@ -16,9 +16,10 @@ class Simulation:
   logbook : Logbook
     The logbook where the simulation data is stored.
   """
-  def __init__(self, rocket):
+  def __init__(self, rocket, integrator):
     self.rocket = rocket
     self.logbook = Logbook()
+    self.integrator = integrator
   
   def run(self, sim_time, sim_timestep):
     """
@@ -39,12 +40,11 @@ class Simulation:
     curr_time = 0
     
     while(curr_time < sim_time):
-      data = self.rocket.update(sim_timestep)
+      data = self.rocket.update(sim_timestep, self.integrator)
       data.update({'time': curr_time})
       self.logbook.add_data(data)
       curr_time += sim_timestep 
     return self.logbook
-
 
   def plot(self, include=None, in_terminal=False):
     """
@@ -64,5 +64,3 @@ class Simulation:
     Animate the rocket's journey through time and space.
     """
     self.logbook.animate()
-
-

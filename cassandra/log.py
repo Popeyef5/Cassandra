@@ -1,68 +1,7 @@
 import math
 import numpy as np
 import quaternion as q
-
-
-class Log:
-  """
-  A log that stores the information of a single variable through the simulation time.
-
-  Parameters
-  ----------
-  name : str
-    The Log identifier.
-  type : {Log.VECTOR, Log.QUATERNION, Log.SCALAR}
-    The type of variable being stored.
- 
-  Attributes
-  ----------
-  name : str
-    The Log identifier.
-  type : {Log.VECTOR, Log.QUATERNION, Log.SCALAR}
-    The type of variable being stored.
-  data : list
-    The data being stored.
-  """
-
-  VECTOR = 'vector'
-  QUATERNION = 'quaternion'
-  SCALAR = 'scalar'
-
-  def __init__(self, name, type):
-    self.name = name
-    self.data = []
-    self.type = type
-
-  def add_data(self, data_point):
-    """
-    Add new data to the log.
-
-    Parameters
-    ----------
-    data_point : scalar or quaternion or array_like
-      The data to append.
-    """
-    self.data.append(data_point)
-
-  def get_data(self, ops=None):
-    """
-    Get preprocessed data.
- 
-    Parameters
-    ----------
-    ops : list, default=None
-      The list of operations to perform on the data before returning it.
-
-    Returns
-    -------
-    list
-      The processed data.
-    """
-    ret = self.data.copy()
-    if ops is not None:
-      for op in ops:
-        ret = [op(dp) for dp in ret]
-    return ret
+import pandas as pd
 
 
 class Logbook:
@@ -72,51 +11,22 @@ class Logbook:
   Attributes
   ----------
   logs : dict
-    A dictionary with all the logs identified by a human readable string.
+    A pandas DataFrame with all the logs identified by a human readable string.
   """
 
   def __init__(self):
-    self.logs = {
-      'time': Log('Time', Log.SCALAR),
-      'thrust': Log('Thrust', Log.SCALAR),
-      'cm_position': Log('Center of mass position', Log.VECTOR),
-      'cm_orientation': Log('Center of mass orientation', Log.QUATERNION),
-      'cm_linear_velocity': Log('Center of mass linear velocity', Log.VECTOR),
-      'cm_angular_velocity': Log('Center of mass angular velocity', Log.VECTOR),
-      'mount_position': Log('Mount position', Log.VECTOR),
-      'mount_orientation': Log('Mount orientation', Log.QUATERNION),
-      'frame_position': Log('Frame position', Log.VECTOR),
-      'frame_orientation': Log('Frame orientation', Log.QUATERNION)
-    }
+    self.logs = pd.DataFrame()
 
-  def add_log(self, name, log):
+  def add_data(self, data):
     """
-    Add new log to the logbook.
+    Add batch data to logs.
 
     Parameters
     ----------
-    name : str
-      The log's identifier.
-    log : Log
-      The log to add. 
-    """
-    self.logs['name'] = log
-
-  def add_data(self, data_dict):
-    """
-    Add batch data to multiple logs.
-
-    Parameters
-    ----------
-    data_dict : dict
+    data : dict
       The dictionary containing the data points for the appropriate logs tagged by the log identifier.
     """
-    for log_name in data_dict:
-      if log_name not in self.logs:
-        print(log_name)
-        self.logs[log_name] = Log(log_name)
-
-      self.logs[log_name].add_data(data_dict[log_name])
+    self.logs = self.logs.append(data, ignore_index=True)
 
   def plot(self, include, in_terminal=False):
     """
@@ -154,6 +64,7 @@ class Logbook:
     """
     Animates the rocket's movement according to the data in the logs.
     """
+    # TODO: this only works with the default rocket and is currently for testing only
     # Ideally we'd use something other than matplotlib. It really wasn't designed for
     # this sort of application.
     import matplotlib.pyplot as plt
@@ -162,16 +73,16 @@ class Logbook:
     import numpy as np
     import quaternion as q
 
-    cm_positions = self.logs['cm_position'].get_data()
-    cm_orientations = self.logs['cm_orientation'].get_data() 
+    cm_positions = self.logs['cm_position']
+    cm_orientations = self.logs['cm_orientation']
 
-    frame_rel_positions = self.logs['frame_position'].get_data()
-    frame_rel_orientations = self.logs['frame_orientation'].get_data()
+    frame_rel_positions = self.logs['frame_position']
+    frame_rel_orientations = self.logs['frame_orientation']
 
-    mount_rel_positions = self.logs['mount_position'].get_data()
-    mount_rel_orientations = self.logs['mount_orientation'].get_data()
+    mount_rel_positions = self.logs['mount_position']
+    mount_rel_orientations = self.logs['mount_orientation']
     
-    thrust = self.logs['thrust'].get_data()
+    thrust = self.logs['thrust']
 
     fig, ax = plt.subplots(2, 2)
     ax[0, 0].set_xlim(-21, 21)

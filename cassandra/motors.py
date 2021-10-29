@@ -1,6 +1,8 @@
 import numpy as np
+from cassandra.physics.kinematics import Loggable, Dynamic
+from cassandra.components import RocketComponent
 
-class Motor:
+class Motor(RocketComponent):
   """
   A basic solid rocket motor.
 
@@ -21,7 +23,7 @@ class Motor:
     Time since motor ignition. Used to calculate current thrust and mass.
   """
 
-  def __init__(self, thrust_curve, mass_curve):
+  def __init__(self, thrust_curve, mass_curve, name='motor', *args, **kwargs):
     self.thrust_curve = np.concatenate(
       [thrust_curve,
       np.array([[thrust_curve[0, -1] + 0.1], [0]])],
@@ -29,8 +31,12 @@ class Motor:
     )
     self.mass_curve = np.copy(mass_curve)
     self.ignition_time = 0
+    super().__init__(name=name, *args, **kwargs)
+  
+  def status(self):
+    return {'thrust': self.thrust()}
 
-  def thrust(self, time=None):
+  def thrust(self):
     """
     Get motor thrust at a specific point in time since ignition.
 
@@ -44,19 +50,13 @@ class Motor:
     scalar
       The thrust at the requested time.
     """
-    if time is None:
-      time = self.ignition_time
-    thrust = self.thrust_curve[:, self.thrust_curve[0] <= time][1, -1]
+    thrust = self.thrust_curve[:, self.thrust_curve[0] <= self.ignition_time][1, -1]
     return thrust
 
-  def mass(self, time=None):
+  @property
+  def mass(self):
     """
     Get motor's mass at a specific point in time since ignition.
-
-    Parameters
-    ----------
-    time : scalar, default=None
-      The time at which to calculate the mass. Defaults to the motor's ignition time.
 
     Returns
     -------
@@ -64,12 +64,14 @@ class Motor:
       The motor's mass at the requested time.
     """
 
-    if time is None:
-      time = self.ignition_time
-    mass = self.mass_curve[:, self.mass_curve[0] <= time][1, -1]
-    return mass 
+    mass = self.mass_curve[:, self.mass_curve[0] <= self.ignition_time][1, -1]
+    return mass
 
-  def update(self, timestep):
+  @property
+  def inertia(self):
+    return np.zeros((3, 3))
+
+  def update(self, timestep, *args, **kwargs):
     """
     Update the motor's ignition time.
 
@@ -79,6 +81,11 @@ class Motor:
       The ellapsed time with which to update the motor's ignition time.
     """
     self.ignition_time += timestep
+    ret = self.status()
+    res = super().update(timestep, *args, **kwargs)
+    if res:
+      ret.update(res)
+    return ret
 
 
 class UniformMotor(Motor):

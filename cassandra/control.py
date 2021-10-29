@@ -1,7 +1,8 @@
 import numpy as np
 import quaternion as q
 import math
-from cassandra.physics import EulerAngles
+import abc
+from cassandra.physics.kinematics import EulerAngles, Dynamic
 
 
 class PID:
@@ -68,7 +69,7 @@ class PID:
     return proportional + integral + derivative
 
 
-class FlightSoftware:
+class FlightSoftware(Dynamic, abc.ABC):
   """
   A flight software for controlling the rocket before, during and after flight.
 
@@ -110,6 +111,7 @@ class FlightSoftware:
       self.last_execution = 0
 
   @staticmethod
+  @abc.abstractmethod
   def program(rocket, measurements):
     """
     The program being run by the software in loop.
@@ -121,6 +123,24 @@ class FlightSoftware:
     measurements : dict
       The physical information available to the software at this point in time.
     """
+    pass
+
+
+class DummySoftware(FlightSoftware):
+  """
+  Dummy test software that does absolutely nothing.
+  """
+  @staticmethod
+  def program(rocket, measurements):
+    pass
+
+
+class RandomSoftware(FlightSoftware):
+  """
+  Basic flight software that controls the rocket randomly.
+  """
+  @staticmethod
+  def program(rocket, measurements):
     roll = np.random.uniform(-rocket.mount.max_roll, rocket.mount.max_roll)
     pitch = np.random.uniform(-rocket.mount.max_pitch, rocket.mount.max_pitch)
     orientation = EulerAngles(roll, pitch, 0).to_quaternion()
