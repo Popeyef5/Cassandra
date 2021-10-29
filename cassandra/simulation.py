@@ -1,4 +1,5 @@
 from cassandra.log import Logbook
+from cassandra.physics.integrators import Euler
 
 class Simulation:
   """
@@ -16,9 +17,11 @@ class Simulation:
   logbook : Logbook
     The logbook where the simulation data is stored.
   """
-  def __init__(self, rocket, integrator):
+  def __init__(self, rocket, integrator=None):
     self.rocket = rocket
     self.logbook = Logbook()
+    if integrator is None:
+      integrator = Euler()
     self.integrator = integrator
   
   def run(self, sim_time, sim_timestep):
